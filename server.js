@@ -6,8 +6,18 @@ const truffle_connect = require('./connection/app.js');
 const bodyParser = require('body-parser');
 const { exec } = require("child_process");
 const fs = require('fs');
+const IPFS = require("ipfs-api")
+const ipfs=new IPFS({host:"ipfs.infura.io",port:5001,protocol:"https"});
 
+const https = require('https');
 // parse application/x-www-form-urlencoded
+///
+app.set("views","./public_static")
+app.set("view engine","ejs")
+
+app.get('/a',(req,res)=>{
+  res.render("test",{"anis":"anis"});
+})
 
 var session = require("express-session");
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true}))
@@ -20,6 +30,7 @@ app.use(bodyParser.json());
 
 function VerifieUser(req,res){
   truffle_connect.VerifieUser(req.session.email,req.session.password,(balance) => {
+    console.log(balance)
     if(balance==false){ res.redirect("/login")}
   });
 }
@@ -32,12 +43,19 @@ app.get('/login',(req,res)=>{
   res.sendFile(__dirname+"/public_static/login.html")
 }
 )
+
+app.get('/DossierPatient/:id', (req, res) => {
+  res.render("test",{"anis":req.params.id})
+});
 app.use(express.static('public_static'));
 
 
 app.get('/save/:email/:password', (req, res) => {
   console.log("**** GET /saveVal ****");
-  exec("cpabe-setup", (error, stdout, stderr) => {
+  truffle_connect.sendUser(/*req.params.nom,req.params.prenom,req.params.adresse,req.params.telephone,*/req.params.email,req.params.password,(balance) => {  
+    res.send(balance);
+  });
+ /* exec("cpabe-setup", (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
         return;
@@ -47,17 +65,45 @@ app.get('/save/:email/:password', (req, res) => {
         
         return;
     } 
-});
-var PK,MK;
-fs.readFile("pub_key","utf-8",function(err,data){
-  console.log(data)
-  truffle_connect.sendUser(/*req.params.nom,req.params.prenom,req.params.adresse,req.params.telephone,*/req.params.email,req.params.password,data,(balance) => {  
-    res.send(balance);
-  });
-  
-})
+    var PK,MK;
+
+    let readablestream = fs.createReadStream("pub_key");
+    readablestream.on('readable', () => {
+      let pubkey = readablestream.read();
+      PK=pubkey;
+      if (pubkey) {
+        ipfs.files.add(pubkey, function(err, pubkey_result) {
+          if (err) {
+            res.json('err');
+            console.log(err);
+          }
+          let master_key_stream = fs.createReadStream("master_key");
+          master_key_stream.on('readable', () => {
+            let master_key = master_key_stream.read();
+            if (master_key) {
+              ipfs.files.add(master_key, function(err, masterkey_result) {
+                if (err) {
+                  res.json('err');
+                  console.log(err);
+                }
+                console.log(pubkey_result);
+                console.log(masterkey_result);
+                truffle_connect.sendUser(/*req.params.nom,req.params.prenom,req.params.adresse,req.params.telephone,req.params.email,req.params.password,pubkey_result[0]["hash"],masterkey_result[0]["hash"],(balance) => {  
+                  res.send(balance);
+                });
+          
+              });
+            }
+          });
+        });
+      }
+    });
+});*/
+
+
 
 });
+
 app.post('/get', (req, res) => {
   console.log("**** GET /saveVal ****");
   // methode get req.query.val
@@ -75,28 +121,177 @@ app.post('/get', (req, res) => {
 
 app.get('/Profile', (req, res) => {
  VerifieUser(req,res);
- res.sendFile(__dirname+"/public_static/Profile.html")
-});
-app.get('/ProfileJson', (req, res) => {
+  // res.sendFile(__dirname+"/public_static/Profile.html")
   truffle_connect.GetUser(req.session.user_id,(balance) => {
-    res.send(balance)
-    console.log(balance[3])
+    console.log(balance)
+    res.render("Profile",{"profile":balance})
   });
 });
 
-app.get('/s', (req, res) => {
+app.get('/AddAttribut/:attr', (req, res) => {
+  truffle_connect.addAttrubut(req.session.user_id,req.params.attr,(result) => {
+    console.log(result)
+    res.send(result)
+  });
+});
+app.get('/GetAttribut', (req, res) => {
+  truffle_connect.GetAttrubut(req.session.user_id,(result) => {
+    var list=[];
+    for(var i=0;i<result.length;i++){
+      if(result[i]!="")
+      list.push(result[i])
+    }
+    res.send(list)
+  });
+});
+app.get('/Dossier', (req, res) => {
+  VerifieUser(req,res);
+ // res.sendFile(__dirname+"/public_static/Dossier.html")
+  truffle_connect.GetAllDossier(req.session.user_id,(result) => {
+    res.render("Dossier",{"result":result})
+
+  });
+ });
+
+app.get('/DossierJson', (req, res) => {
+  truffle_connect.GetAllDossier(req.session.user_id,(result) => {
+    res.send(result)
+  });
+});
+
+
+app.post('/CreateDossier', (req, res) => {
   
-  truffle_connect.setUserDossier(req.session.user_id,(balance) => {
-    res.send(balance)
+  fs.writeFile('dossier.txt', '[]', err => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    exec("cpabe-enc pub_key dossier.txt '"+req.body.politique+"'", (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          
+          return;
+      } 
+      let readablestream = fs.createReadStream("dossier.txt.cpabe");
+      readablestream.on('readable', () => {
+      let result = readablestream.read();
+      if (result) {
+        ipfs.files.add(result, function(err, files) {
+          if (err) {
+            res.json('err');
+            console.log(err);
+          }
+          truffle_connect.setUserDossier(req.session.user_id,files[0]["hash"],req.body.politique,(balance) => {
+            console.log(files);
+            res.send(balance)
+          });
+        });
+      }
+      });
+    });
+  })
+
+});
+
+
+
+
+app.get('/GetDossier/:dossier_id', (req, res) => {
+  truffle_connect.GetUserDossier(req.session.user_id,req.params.dossier_id,(result) => {
+    //console.log(balance[1])
+    console.log(result)
+    const file = fs.createWriteStream("dossier.txt.cpabe");
+    https.get("https://ipfs.infura.io/ipfs/"+result[1], function(response) {
+      response.pipe(file);  
+      exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            
+            res.send("error"); 
+            return;
+        }
+        let rawdata = fs.readFileSync('dossier.txt');
+        let a = JSON.parse(rawdata);
+        res.send(a)
+        });   
+    });
+  });
+});
+app.get('/ADDInfoDossier/:dossier_id/:data', (req, res) => {
+  truffle_connect.GetUserDossier(req.session.user_id,req.params.dossier_id,(result) => {
+    //console.log(balance[1])
+    console.log(result)
+    const file = fs.createWriteStream("dossier.txt.cpabe");
+    https.get("https://ipfs.infura.io/ipfs/"+result[1], function(response) {
+      response.pipe(file);  
+      exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            
+            res.send("error"); 
+            return;
+        }
+        var a = JSON.parse(fs.readFileSync('dossier.txt'));
+        a.push(req.params.data);
+        ADDInfoDossier(JSON.stringify(a),req.session.user_id,req.params.dossier_id,"patient")
+        res.send("ok")
+        });   
+    });
   });
 });
 
-app.get('/g', (req, res) => {
-  truffle_connect.GetUserDossier(req.session.user_id,(balance) => {
-    res.send(balance)
-  });
-});
-
+function ADDInfoDossier(data,user_id,dossier_id,politique){
+  fs.writeFile('dossier.txt', data, err => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    exec("cpabe-enc pub_key dossier.txt '"+politique+"'", (error, stdout, stderr) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+      }
+      
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          
+          return;
+      } 
+      let readablestream = fs.createReadStream("dossier.txt.cpabe");
+      readablestream.on('readable', () => {
+      let result = readablestream.read();
+      if (result) {
+        ipfs.files.add(result, function(err, files) {
+          if (err) {
+            res.json('err');
+            console.log(err);
+          }
+          truffle_connect.setHashFile(user_id,dossier_id,files[0]["hash"],(balance) => {
+            console.log(files);
+            return true;
+          });
+        });
+      }
+      });
+    });
+  })
+}
 
 app.listen(port, () => {
   truffle_connect.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
