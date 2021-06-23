@@ -21,15 +21,15 @@
    <meta name="author" content="Creative Tim">
    <title></title>
    <!-- Favicon -->
-   <link rel="icon" href="assets/img/brand/favicon.png" type="image/png">
+   <link rel="icon" href="/assets/img/brand/favicon.png" type="image/png">
    <!-- Fonts -->
    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
    <!-- Icons -->
-   <link rel="stylesheet" href="assets/vendor/nucleo/css/nucleo.css" type="text/css">
-   <link rel="stylesheet" href="assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
+   <link rel="stylesheet" href="/assets/vendor/nucleo/css/nucleo.css" type="text/css">
+   <link rel="stylesheet" href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
    <!-- Page plugins -->
    <!-- Argon CSS -->
-   <link rel="stylesheet" href="assets/css/argon.css?v=1.1.0" type="text/css">
+   <link rel="stylesheet" href="/assets/css/argon.css?v=1.1.0" type="text/css">
  </head>
  
  <body>
@@ -50,12 +50,12 @@
          <div class="header-body">
            <div class="row align-items-center py-4">
              <div class="col-lg-6 col-7">
-               <h6 class="h2 text-white d-inline-block mb-0">Profile</h6>
+               <h6 class="h2 text-white d-inline-block mb-0">fichier de suivi</h6>
                <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                  <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                    <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
                    <li class="breadcrumb-item"><a href="#">Dashboards</a></li>
-                   <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                   <li class="breadcrumb-item active" aria-current="page">fichier de suivi</li>
                  </ol>
                </nav>
              </div>
@@ -72,80 +72,56 @@
             <div class="card">
                 <!-- Card header -->
                 <div class="card-header">
-                  <h3 class="mb-0">Profile</h3>
+                  <h3 class="mb-0">Ajouter d'une fichier de suivi</h3>
                 </div>
                 <!-- Card body -->
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="/ADDFicheDeSuivi">
                     <!-- Input groups with icon -->
                     <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <div class="input-group input-group-merge">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            </div>
-                            <input class="form-control" placeholder="Nom" type="text" id="nom">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <div class="input-group input-group-merge">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            </div>
-                            <input class="form-control" placeholder="Prenom" type="text" id="prenom">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <div class="input-group input-group-merge">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                              </div>
-                              <input class="form-control" placeholder="Email address" type="email" id='email'>
-                            </div>
-                          </div>
-                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                               <div class="input-group input-group-merge">
                                 <div class="input-group-prepend">
-                                  <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                  <span class="input-group-text"><i class="fas fa-user"></i></span>
                                 </div>
-                                <input class="form-control" placeholder="Telephone" type="text" id='telephone'>
+                                <input class="form-control" placeholder="Type Maladie" type="text" name="Type">
                               </div>
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                        <div class="form-group">
+                          <div class="input-group input-group-merge">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            </div>
+                            <input class="form-control" placeholder="Data" type="date" name="DataCreation">
                           </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <div class="input-group input-group-merge">
-                            <input class="form-control" placeholder="Adresse" type="text" id="adresse">
-                            <div class="input-group-append">
-                              <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                              <div class="input-group input-group-merge">
+                                <textarea class="form-control" name="Observation" placeholder="Observation ..."  cols="30" rows="3"></textarea>
+                              </div>
                             </div>
-                          </div>
                         </div>
-                      </div>
-                      <div class="col-md-6">
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
                         <div class="form-group">
                           <div class="input-group input-group-merge">
-                            <input class="form-control" placeholder="Password" type="password" id="password">
-                            <div class="input-group-append">
-                              <span class="input-group-text"><i class="fas fa-eye"></i></span>
-                            </div>
+                            <textarea class="form-control" name="CompteRendu" placeholder="Compte Rendu ..." cols="30" rows="3"></textarea>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <input type="hidden" name="user_id" value="<%= user_id %>">
+                    <input type="hidden" name="dossier_id" value="<%= dossier_id %>">
                     <!-- Input groups with icon -->
-                   
+                    <button class="btn btn-primary" type="submit">Submit form</button>
                   </form>
                 </div>
               <div>
@@ -161,20 +137,20 @@
    </div>
    <!-- Argon Scripts -->
    <!-- Core -->
-   <script src="assets/vendor/jquery/dist/jquery.min.js"></script>
-   <script src="assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="assets/vendor/js-cookie/js.cookie.js"></script>
-   <script src="assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
-   <script src="assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
+   <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+   <script src="/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="/assets/vendor/js-cookie/js.cookie.js"></script>
+   <script src="/assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
+   <script src="/assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
    <!-- Optional JS -->
-   <script src="assets/vendor/chart.js/dist/Chart.min.js"></script>
-   <script src="assets/vendor/chart.js/dist/Chart.extension.js"></script>
+   <script src="/assets/vendor/chart.js/dist/Chart.min.js"></script>
+   <script src="/assets/vendor/chart.js/dist/Chart.extension.js"></script>
    <!-- Argon JS -->
-   <script src="assets/js/argon.js?v=1.1.0"></script>
+   <script src="/assets/js/argon.js?v=1.1.0"></script>
    <!-- Demo JS - remove this in your project -->
-   <script src="assets/js/demo.min.js"></script>
+   <script src="/assets/js/demo.min.js"></script>
    
-   <script src="javascript/index.js"></script>
+   <script src="/javascript/index.js"></script>
  </body>
  
  </html>

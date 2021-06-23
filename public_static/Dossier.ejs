@@ -63,9 +63,8 @@
             <div class="card">
               <!-- Card header -->
               <div class="card-header">
-                <h3 class="mb-0">Datatable</h3>
+                <h3 class="mb-0">Dossier Medical</h3>
                 <p class="text-sm mb-0">
-                  This is an exmaple of datatable using the well known datatables.net plugin. This is a minimal setup in order to get started fast.
                 </p>
               </div>
               <div class="table-responsive py-4">
@@ -78,7 +77,10 @@
                     <% for(var i=1;i<result[0].length;i++) { %>
                       <tr>
                         <td> <%= result[0][i] %></td>
-                        <td><a href='GetDossier/<%= result[1][i-1] %>'> detail </a>  </td>
+                        <td>
+                          <a class="btn btn-primary" href='GetDossier/<%= result[1][i-1] %>'> detail </a>  
+                          <a class="btn btn-primary" href='ADDFicheDeSuivi/<%= result[1][i-1] %>'> Ajouter FicheDeSuivi </a>
+                        </td>
                       </tr>
                       <% } %>
                   </thead>

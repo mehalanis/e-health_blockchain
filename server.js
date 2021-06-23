@@ -7,9 +7,9 @@ const bodyParser = require('body-parser');
 const { exec } = require("child_process");
 const fs = require('fs');
 const IPFS = require("ipfs-api")
-const ipfs=new IPFS({host:"ipfs.infura.io",port:5001,protocol:"https"});
-
-const https = require('https');
+const ipfs=new IPFS({host:"localhost",port:5001,protocol:"http"});
+const ipfs_address="http://localhost:8080/ipfs/"
+const https = require('http');
 // parse application/x-www-form-urlencoded
 ///
 app.set("views","./public_static")
@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 
 function VerifieUser(req,res){
   truffle_connect.VerifieUser(req.session.email,req.session.password,(balance) => {
-    console.log(balance)
+    console.log("VerifieUser :" +balance)
     if(balance==false){ res.redirect("/login")}
   });
 }
@@ -44,9 +44,7 @@ app.get('/login',(req,res)=>{
 }
 )
 
-app.get('/DossierPatient/:id', (req, res) => {
-  res.render("test",{"anis":req.params.id})
-});
+
 app.use(express.static('public_static'));
 
 
@@ -114,6 +112,19 @@ app.post('/get', (req, res) => {
       req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
+      exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            
+            res.send("error"); 
+            return;
+        }
+        }); 
     }
     res.send(balance)
   });
@@ -153,13 +164,6 @@ app.get('/Dossier', (req, res) => {
   });
  });
 
-app.get('/DossierJson', (req, res) => {
-  truffle_connect.GetAllDossier(req.session.user_id,(result) => {
-    res.send(result)
-  });
-});
-
-
 app.post('/CreateDossier', (req, res) => {
   
   fs.writeFile('dossier.txt', '[]', err => {
@@ -189,7 +193,8 @@ app.post('/CreateDossier', (req, res) => {
           }
           truffle_connect.setUserDossier(req.session.user_id,files[0]["hash"],req.body.politique,(balance) => {
             console.log(files);
-            res.send(balance)
+            res.redirect("/Dossier")
+            return;
           });
         });
       }
@@ -207,7 +212,7 @@ app.get('/GetDossier/:dossier_id', (req, res) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
-    https.get("https://ipfs.infura.io/ipfs/"+result[1], function(response) {
+    https.get(ipfs_address+result[1], function(response) {
       response.pipe(file);  
       exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
         if (error) {
@@ -222,41 +227,49 @@ app.get('/GetDossier/:dossier_id', (req, res) => {
             return;
         }
         let rawdata = fs.readFileSync('dossier.txt');
-        let a = JSON.parse(rawdata);
-        res.send(a)
+        var dossier = JSON.parse(rawdata);
+          res.render("FicheDeSuivi",{"dossier":dossier,"user_id":req.session.user_id})
         });   
     });
   });
 });
-app.get('/ADDInfoDossier/:dossier_id/:data', (req, res) => {
-  truffle_connect.GetUserDossier(req.session.user_id,req.params.dossier_id,(result) => {
+app.get('/ADDFicheDeSuivi/:dossier_id', (req, res) => {
+  res.render("AddFicheDeSuivi",{"user_id":req.session.user_id,"dossier_id":req.params.dossier_id})
+
+});
+
+app.post('/ADDFicheDeSuivi', (req, res) => {
+  truffle_connect.GetUserDossier(req.body.user_id,req.body.dossier_id,(result) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
-    https.get("https://ipfs.infura.io/ipfs/"+result[1], function(response) {
+    https.get(ipfs_address+result[1], function(response) {
       response.pipe(file);  
       exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
-            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            
-            res.send("error"); 
-            return;
-        }
-        var a = JSON.parse(fs.readFileSync('dossier.txt'));
-        a.push(req.params.data);
-        ADDInfoDossier(JSON.stringify(a),req.session.user_id,req.params.dossier_id,"patient")
-        res.send("ok")
+          if (error) {
+              console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+              res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+              return;
+          }
+          if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              
+              res.send("error"); 
+              return;
+          }
+          var a = JSON.parse(fs.readFileSync('dossier.txt'));
+          var FicheDeSuivi='{"Type":"'+req.body.Type+'","DataCreation":"'+req.body.DataCreation+'","Observation":"'+req.body.Observation+'","CompteRendu":"'
+          +req.body.CompteRendu+'"}';
+          FicheDeSuivi=JSON.parse(FicheDeSuivi)
+          a.push(FicheDeSuivi);
+          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.user_id)
+          
         });   
     });
   });
 });
 
-function ADDInfoDossier(data,user_id,dossier_id,politique){
+function ADDInfoDossier(data,user_id,dossier_id,politique,res,redirect){
   fs.writeFile('dossier.txt', data, err => {
     if (err) {
       console.error(err)
@@ -284,7 +297,7 @@ function ADDInfoDossier(data,user_id,dossier_id,politique){
           }
           truffle_connect.setHashFile(user_id,dossier_id,files[0]["hash"],(balance) => {
             console.log(files);
-            return true;
+            res.redirect(redirect)
           });
         });
       }
@@ -294,6 +307,6 @@ function ADDInfoDossier(data,user_id,dossier_id,politique){
 }
 
 app.listen(port, () => {
-  truffle_connect.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
+  truffle_connect.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7546"));
   console.log("Express Listening at http://localhost:" + port);
 });

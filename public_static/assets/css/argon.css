@@ -24247,10 +24247,7 @@ textarea[resize='horizontal']
     {
         left: 50%;
     }
-    .timeline-content
-    {
-        width: 38%;
-    }
+    
     .timeline-body
     {
         padding: 1.5rem;
@@ -24322,14 +24319,6 @@ textarea[resize='horizontal']
 .timeline-one-side .timeline-content
 {
     width: auto;
-}
-
-@media (min-width: 992px)
-{
-    .timeline-one-side .timeline-content
-    {
-        max-width: 30rem;
-    }
 }
 
 .timeline-one-side .timeline-block:nth-child(even) .timeline-content
