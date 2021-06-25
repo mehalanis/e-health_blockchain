@@ -7,7 +7,7 @@ var UserSystem = contract(UserSystem_artifact);
 const Medecin_artifact = require('../build/contracts/Medecin.json');
 var Medecin = contract(Medecin_artifact);
 
-var addresse="0x51786A9d0ce4Ed898cf0b7CFf6A4aCb934735fEE"
+var addresse="0x3B7411Ed4D6A48b429Fb8e3b712BA449FD8cd686"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -85,7 +85,7 @@ module.exports = {
     var meta;
     Medecin.deployed().then(function(instance) {
       meta = instance;
-      return meta.VerifieUser(email,password,{from:addresse});
+      return meta.VerifieMedecin(email,password,{from:addresse});
     }).then(function(val) {
       callback(val);
     }).catch(function(e) {

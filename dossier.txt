@@ -1,1 +1,0 @@
-[{"Type":"maladie","DataCreation":"2021-06-01","Observation":"observation","CompteRendu":"compte rendu"},{"Type":"maladie222","DataCreation":"1111-11-11","Observation":"sofianee","CompteRendu":"sofiane compte"}]

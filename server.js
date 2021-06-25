@@ -15,9 +15,6 @@ const https = require('http');
 app.set("views","./public_static")
 app.set("view engine","ejs")
 
-app.get('/a',(req,res)=>{
-  res.render("test",{"anis":"anis"});
-})
 
 var session = require("express-session");
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true}))
@@ -53,56 +50,16 @@ app.get('/save/:email/:password', (req, res) => {
   truffle_connect.sendUser(/*req.params.nom,req.params.prenom,req.params.adresse,req.params.telephone,*/req.params.email,req.params.password,(balance) => {  
     res.send(balance);
   });
- /* exec("cpabe-setup", (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        
-        return;
-    } 
-    var PK,MK;
-
-    let readablestream = fs.createReadStream("pub_key");
-    readablestream.on('readable', () => {
-      let pubkey = readablestream.read();
-      PK=pubkey;
-      if (pubkey) {
-        ipfs.files.add(pubkey, function(err, pubkey_result) {
-          if (err) {
-            res.json('err');
-            console.log(err);
-          }
-          let master_key_stream = fs.createReadStream("master_key");
-          master_key_stream.on('readable', () => {
-            let master_key = master_key_stream.read();
-            if (master_key) {
-              ipfs.files.add(master_key, function(err, masterkey_result) {
-                if (err) {
-                  res.json('err');
-                  console.log(err);
-                }
-                console.log(pubkey_result);
-                console.log(masterkey_result);
-                truffle_connect.sendUser(/*req.params.nom,req.params.prenom,req.params.adresse,req.params.telephone,req.params.email,req.params.password,pubkey_result[0]["hash"],masterkey_result[0]["hash"],(balance) => {  
-                  res.send(balance);
-                });
-          
-              });
-            }
-          });
-        });
-      }
-    });
-});*/
-
-
-
 });
 
-app.post('/get', (req, res) => {
+app.get('/save2/:email/:password', (req, res) => {
+  console.log("**** GET /saveVal ****");
+  truffle_connect.AddMedecin(req.params.email,req.params.password,(balance) => {  
+    res.send(balance);
+  });
+});
+
+app.post('/loginPatient', (req, res) => {
   console.log("**** GET /saveVal ****");
   // methode get req.query.val
   truffle_connect.VerifieUser(req.body.email,req.body.password,(balance) => {
@@ -112,7 +69,22 @@ app.post('/get', (req, res) => {
       req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
- 
+      /*  generer la SK */
+    }
+    res.send(balance)
+  });
+});
+
+app.post('/loginMedecin', (req, res) => {
+  console.log("**** GET /saveVal ****");
+  // methode get req.query.val
+  truffle_connect.VerifieMedecin(req.body.email,req.body.password,(balance) => {
+    console.log(balance)
+    if(balance[0]==true){
+//      req.session.user_id=balance[1].c[0]+"";
+      req.session.email=req.body.email;
+      req.session.password=req.body.password;
+      /*  generer la SK */
     }
     res.send(balance)
   });

@@ -7,13 +7,13 @@ contract Medecin {
       string password;
   }
   mapping(uint => string[]) attribut;
-  mapping(uint => User) public list_id_medecin;
-  mapping(string => User) public list_email_medecin;
+  mapping(uint => medecin) public list_id_medecin;
+  mapping(string => medecin) public list_email_medecin;
   medecin[] public medecins;
   function AddMedecin(string memory _email,string memory _password) public  returns(bool){
         require((keccak256(abi.encodePacked((list_email_medecin[_email].email))) == keccak256(abi.encodePacked(("")))),"erreur");
-        uint id =medecins.push(User(0,_email,_password)) -1;
-        users[id].id=id;
+        uint id =medecins.push(medecin(0,_email,_password)) -1;
+        medecins[id].id=id;
         list_id_medecin[id]=medecins[id];
         list_email_medecin[_email]=medecins[id];
         return true;

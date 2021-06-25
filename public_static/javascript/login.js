@@ -3,9 +3,10 @@ $(document).ready(function () {
         $(".alert-info").css("display","");
         $(".alert-success").css("display","none");
         $(".alert-danger").css("display","none");
+        var url = ($("#type_user").val()=="1") ? "/loginPatient" :"/loginMedecin" ;
         $.ajax({
             type: "POST",
-            url: "/get",
+            url: url,
             data : {email:$("#email").val(),password:$("#password").val()},
             success: function (data) {
               console.log(data)
