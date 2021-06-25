@@ -112,19 +112,7 @@ app.post('/get', (req, res) => {
       req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
-      exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
-            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            
-            res.send("error"); 
-            return;
-        }
-        }); 
+ 
     }
     res.send(balance)
   });
@@ -228,7 +216,7 @@ app.get('/GetDossier/:dossier_id', (req, res) => {
         }
         let rawdata = fs.readFileSync('dossier.txt');
         var dossier = JSON.parse(rawdata);
-          res.render("FicheDeSuivi",{"dossier":dossier,"user_id":req.session.user_id})
+          res.render("FicheDeSuivi",{"dossier":dossier,"dossier_id":req.params.dossier_id})
         });   
     });
   });
@@ -262,7 +250,7 @@ app.post('/ADDFicheDeSuivi', (req, res) => {
           +req.body.CompteRendu+'"}';
           FicheDeSuivi=JSON.parse(FicheDeSuivi)
           a.push(FicheDeSuivi);
-          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.user_id)
+          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.dossier_id)
           
         });   
     });
