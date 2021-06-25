@@ -9,7 +9,7 @@ contract DossierMedicale {
         string hash_file;
         string policy;
     }
-    
+
     mapping(uint /* user_id */ => Dossier[] ) public list_dossier_user;
 
     function setUserDossier(uint _patient_id,string memory _hash_file,string memory _policy) public  returns(bool){

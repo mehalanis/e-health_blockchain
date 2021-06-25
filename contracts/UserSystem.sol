@@ -27,11 +27,15 @@ contract UserSystem {
     function GetUser(uint _id) public view returns(uint id,string memory email,string memory password){
         return (listAddresse[_id].id,listAddresse[_id].email,listAddresse[_id].password);
     }
+
     
     function VerifieUser(string memory _email,string memory _password) public view returns(bool v,uint _id){
         if((keccak256(abi.encodePacked((list_email_user[_email].email))) == keccak256(abi.encodePacked((_email)))) &&
         (keccak256(abi.encodePacked((list_email_user[_email].password))) == keccak256(abi.encodePacked((_password))))) return (true,list_email_user[_email].id);
         return (false,1);
+    }
+      function GetUserByEmail(string memory _email) public view returns(uint id,string memory email){
+        return (list_email_user[_email].id,list_email_user[_email].email);
     }
   /*
     function getUsers() public view returns(string[] memory){

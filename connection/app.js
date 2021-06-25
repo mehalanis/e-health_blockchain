@@ -7,7 +7,7 @@ var UserSystem = contract(UserSystem_artifact);
 const Medecin_artifact = require('../build/contracts/Medecin.json');
 var Medecin = contract(Medecin_artifact);
 
-var addresse="0x3B7411Ed4D6A48b429Fb8e3b712BA449FD8cd686"
+var addresse="0x07640AD37e67611A0c9DA0cf8826B878A80a1342"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -117,6 +117,22 @@ module.exports = {
     UserSystem.deployed().then(function(instance) {
       meta = instance;
       return meta.GetUser(id,{from:addresse,gas:1090996000});
+    }).then(function(val) {
+      console.log(val)
+      callback(val);
+    }).catch(function(e) {
+      callback(e);
+    });
+  },
+  GetUserByEmail:function(email,  callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    UserSystem.setProvider(self.web3.currentProvider);
+    var meta;
+    UserSystem.deployed().then(function(instance) {
+      meta = instance;
+      return meta.GetUserByEmail(email,{from:addresse,gas:1090996000});
     }).then(function(val) {
       console.log(val)
       callback(val);

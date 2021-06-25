@@ -98,6 +98,28 @@ app.get('/Profile', (req, res) => {
     res.render("Profile",{"profile":balance})
   });
 });
+app.get('/RecherchePatient', (req, res) => {
+  VerifieUser(req,res);
+   // res.sendFile(__dirname+"/public_static/Profile.html")
+   truffle_connect.GetUser(req.session.user_id,(balance) => {
+     console.log(balance)
+     res.render("RecherchPatient",{"recherchepatient":balance})
+   });
+ });
+
+app.post('/GetPatient', (req, res) => {
+ // VerifieUser(req,res);
+   // res.sendFile(__dirname+"/public_static/Profile.html")
+   truffle_connect.GetUserByEmail(req.body.email,(balance) => {
+     console.log(balance)
+     truffle_connect.GetAllDossier(balance[0],(listDossier) => {
+       balance[2]=listDossier
+     // res.render("Dossier",{"result":result})
+      res.send(balance)
+      });
+
+   });
+ });
 
 app.get('/AddAttribut/:attr', (req, res) => {
   truffle_connect.addAttrubut(req.session.user_id,req.params.attr,(result) => {
