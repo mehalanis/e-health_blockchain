@@ -4,6 +4,8 @@ const DossierMedicale_artifact = require('../build/contracts/DossierMedicale.jso
 var DossierMedicale = contract(DossierMedicale_artifact);
 const UserSystem_artifact = require('../build/contracts/UserSystem.json');
 var UserSystem = contract(UserSystem_artifact);
+const Medecin_artifact = require('../build/contracts/Medecin.json');
+var Medecin = contract(Medecin_artifact);
 
 var addresse="0x51786A9d0ce4Ed898cf0b7CFf6A4aCb934735fEE"
 
@@ -25,15 +27,32 @@ module.exports = {
       callback(e);
     });
   },
-  addAttrubut:function(id,attr, callback) {
+  AddMedecin: function(email,password,callback) {
+    var self = this;
+    // Bootstrap the MetaCoin abstraction for Use.
+    Medecin.setProvider(self.web3.currentProvider);
+    var meta;
+  
+    Medecin.deployed().then(function(instance) {
+      meta = instance;
+    //  console.log(self.web3.eth.defaultAccount)
+      return meta.AddMedecin(email,password,{from:addresse,gas:1090996000});
+    }).then(function(val) {
+      callback(val);
+    }).catch(function(e) {
+      console.log(e)
+      callback(e);
+    });
+  },
+  addAttribut:function(id,attr, callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    UserSystem.setProvider(self.web3.currentProvider);
+    Medecin.setProvider(self.web3.currentProvider);
     var meta;
-    UserSystem.deployed().then(function(instance) {
+    Medecin.deployed().then(function(instance) {
       meta = instance;
-      return meta.addAttrubut(id,attr,{from:addresse,gas:1090996000});
+      return meta.addAttribut(id,attr,{from:addresse,gas:1090996000});
     }).then(function(val) {
       console.log(val)
       callback(val);
@@ -41,20 +60,36 @@ module.exports = {
       callback(e);
     });
   },
-  GetAttrubut:function(id, callback) {
+  GetAttribut:function(id, callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    UserSystem.setProvider(self.web3.currentProvider);
+    Medecin.setProvider(self.web3.currentProvider);
     var meta;
-    UserSystem.deployed().then(function(instance) {
+    Medecin.deployed().then(function(instance) {
       meta = instance;
-      return meta.GetAttrubut(id,{from:addresse,gas:1090996000});
+      return meta.GetAttribut(id,{from:addresse,gas:1090996000});
     }).then(function(val) {
       console.log(val)
       callback(val);
     }).catch(function(e) {
       callback(e);
+    });
+  },
+  VerifieMedecin: function(email,password,  callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    Medecin.setProvider(self.web3.currentProvider);
+
+    var meta;
+    Medecin.deployed().then(function(instance) {
+      meta = instance;
+      return meta.VerifieUser(email,password,{from:addresse});
+    }).then(function(val) {
+      callback(val);
+    }).catch(function(e) {
+      callback(false);
     });
   },
   VerifieUser: function(email,password,  callback) {

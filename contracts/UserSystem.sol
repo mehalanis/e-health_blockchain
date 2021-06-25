@@ -11,7 +11,6 @@ contract UserSystem {
         string email;
         string password;
     }
-    mapping(uint => string[]) attribut;
     mapping(uint => User) public listAddresse;
     mapping(string => User) public list_email_user;
     User[] public users;
@@ -23,24 +22,18 @@ contract UserSystem {
         list_email_user[_email]=users[id];
         return true;
     }
-    function addAttrubut(uint _id,string memory _attribut) public returns(bool){
-        attribut[_id].push(_attribut);
-        attribut[_id].push("");
-        return true;
-    }
+    
 
     function GetUser(uint _id) public view returns(uint id,string memory email,string memory password){
         return (listAddresse[_id].id,listAddresse[_id].email,listAddresse[_id].password);
     }
-    function GetAttrubut(uint _id) public view returns(string[] memory){
-        return attribut[_id];
-    }
+    
     function VerifieUser(string memory _email,string memory _password) public view returns(bool v,uint _id){
         if((keccak256(abi.encodePacked((list_email_user[_email].email))) == keccak256(abi.encodePacked((_email)))) &&
         (keccak256(abi.encodePacked((list_email_user[_email].password))) == keccak256(abi.encodePacked((_password))))) return (true,list_email_user[_email].id);
         return (false,1);
     }
-/*
+  /*
     function getUsers() public view returns(string[] memory){
         string[] memory p=new string[](users.length+1);
         for(uint i=0;i<users.length;i++){
