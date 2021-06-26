@@ -6,8 +6,10 @@ const UserSystem_artifact = require('../build/contracts/UserSystem.json');
 var UserSystem = contract(UserSystem_artifact);
 const Medecin_artifact = require('../build/contracts/Medecin.json');
 var Medecin = contract(Medecin_artifact);
+const admin_artifact = require('../build/contracts/admin.json');
+var admin = contract(admin_artifact);
 
-var addresse="0x07640AD37e67611A0c9DA0cf8826B878A80a1342"
+var addresse="0xFb6952C2d383424901dA1a1dC320592d2Ef24135"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -217,5 +219,54 @@ module.exports = {
     }).catch(function(e) {
       callback(e);
     });
-  }
+  },
+  getMedecins:function( callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    Medecin.setProvider(self.web3.currentProvider);
+    var meta;
+    Medecin.deployed().then(function(instance) {
+      meta = instance;
+      return meta.getMedecins({from:addresse,gas:1090996000});
+    }).then(function(val) {
+      console.log(val)
+      callback(val);
+    }).catch(function(e) {
+      callback(e);
+    });
+  },
+  AddAdmin: function(email,password,callback) {
+    var self = this;
+    // Bootstrap the MetaCoin abstraction for Use.
+    admin.setProvider(self.web3.currentProvider);
+    var meta;
+  
+    admin.deployed().then(function(instance) {
+      meta = instance;
+    //  console.log(self.web3.eth.defaultAccount)
+      return meta.AddAdmin(email,password,{from:addresse,gas:1090996000});
+    }).then(function(val) {
+      callback(val);
+    }).catch(function(e) {
+      console.log(e)
+      callback(e);
+    });
+  }, 
+  VerifieAdmin: function(email,password,  callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    admin.setProvider(self.web3.currentProvider);
+
+    var meta;
+    admin.deployed().then(function(instance) {
+      meta = instance;
+      return meta.VerifieAdmin(email,password,{from:addresse});
+    }).then(function(val) {
+      callback(val);
+    }).catch(function(e) {
+      callback("erreur sofiane");
+    });
+  },
 }

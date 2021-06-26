@@ -40,6 +40,10 @@ app.get('/login',(req,res)=>{
   res.sendFile(__dirname+"/public_static/login.html")
 }
 )
+app.get('/admin/login',(req,res)=>{
+  res.sendFile(__dirname+"/public_static/admin/login.html")
+}
+)
 
 
 app.use(express.static('public_static'));
@@ -55,6 +59,12 @@ app.get('/save/:email/:password', (req, res) => {
 app.get('/save2/:email/:password', (req, res) => {
   console.log("**** GET /saveVal ****");
   truffle_connect.AddMedecin(req.params.email,req.params.password,(balance) => {  
+    res.send(balance);
+  });
+});
+app.get('/save3/:email/:password', (req, res) => {
+  console.log("**** GET /saveVal ****");
+  truffle_connect.AddAdmin(req.params.email,req.params.password,(balance) => {  
     res.send(balance);
   });
 });
@@ -81,6 +91,20 @@ app.post('/loginMedecin', (req, res) => {
   truffle_connect.VerifieMedecin(req.body.email,req.body.password,(balance) => {
     console.log(balance)
     if(balance[0]==true){
+//      req.session.user_id=balance[1].c[0]+"";
+      req.session.email=req.body.email;
+      req.session.password=req.body.password;
+      /*  generer la SK */
+    }
+    res.send(balance)
+  });
+});
+app.post('/loginAdmin', (req, res) => {
+  console.log("**** GET /saveVal ****");
+  // methode get req.query.val
+  truffle_connect.VerifieAdmin(req.body.email,req.body.password,(balance) => {
+    console.log(balance)
+    if(balance==true){
 //      req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
@@ -117,7 +141,6 @@ app.post('/GetPatient', (req, res) => {
      // res.render("Dossier",{"result":result})
       res.send(balance)
       });
-
    });
  });
 

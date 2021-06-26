@@ -31,5 +31,12 @@ contract Medecin {
         (keccak256(abi.encodePacked((list_email_medecin[_email].password))) == keccak256(abi.encodePacked((_password))))) return (true,list_email_medecin[_email].id);
         return (false,1);
     }
+    function getMedecins() public view returns(string[] memory){
+        string[] memory p=new string[](medecins.length+1);
+        for(uint i=0;i<medecins.length;i++){
+            p[i]=medecins[i].email;
+        }
+        return p;
+    }
   
 }
