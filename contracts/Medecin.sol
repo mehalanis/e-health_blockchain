@@ -20,7 +20,6 @@ contract Medecin {
     }
     function addAttribut(uint _id,string memory _attribut) public returns(bool){
         attribut[_id].push(_attribut);
-        attribut[_id].push("");
         return true;
     }
     function GetAttribut(uint _id) public view returns(string[] memory){
@@ -30,6 +29,9 @@ contract Medecin {
         if((keccak256(abi.encodePacked((list_email_medecin[_email].email))) == keccak256(abi.encodePacked((_email)))) &&
         (keccak256(abi.encodePacked((list_email_medecin[_email].password))) == keccak256(abi.encodePacked((_password))))) return (true,list_email_medecin[_email].id);
         return (false,1);
+    }
+    function GetMedecin(string memory _email) public view returns(uint,string memory){
+        return (list_email_medecin[_email].id,list_email_medecin[_email].email);
     }
     function getMedecins() public view returns(string[] memory){
         string[] memory p=new string[](medecins.length+1);

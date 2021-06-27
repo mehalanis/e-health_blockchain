@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-
 function VerifieUser(req,res){
   truffle_connect.VerifieUser(req.session.email,req.session.password,(balance) => {
     console.log("VerifieUser :" +balance)
@@ -91,7 +90,7 @@ app.post('/loginMedecin', (req, res) => {
   truffle_connect.VerifieMedecin(req.body.email,req.body.password,(balance) => {
     console.log(balance)
     if(balance[0]==true){
-//      req.session.user_id=balance[1].c[0]+"";
+      req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
       /*  generer la SK */
@@ -113,7 +112,6 @@ app.post('/loginAdmin', (req, res) => {
     res.send(balance)
   });
 });
-
 app.get('/Profile', (req, res) => {
  VerifieUser(req,res);
   // res.sendFile(__dirname+"/public_static/Profile.html")
@@ -145,13 +143,13 @@ app.post('/GetPatient', (req, res) => {
  });
 
 app.get('/AddAttribut/:attr', (req, res) => {
-  truffle_connect.addAttrubut(req.session.user_id,req.params.attr,(result) => {
+  truffle_connect.addAttribut(req.session.user_id,req.params.attr,(result) => {
     console.log(result)
     res.send(result)
   });
 });
 app.get('/GetAttribut', (req, res) => {
-  truffle_connect.GetAttrubut(req.session.user_id,(result) => {
+  truffle_connect.GetAttribut(req.session.user_id,(result) => {
     var list=[];
     for(var i=0;i<result.length;i++){
       if(result[i]!="")
@@ -165,7 +163,6 @@ app.get('/Dossier', (req, res) => {
  // res.sendFile(__dirname+"/public_static/Dossier.html")
   truffle_connect.GetAllDossier(req.session.user_id,(result) => {
     res.render("Dossier",{"result":result})
-
   });
  });
 
@@ -310,7 +307,20 @@ function ADDInfoDossier(data,user_id,dossier_id,politique,res,redirect){
     });
   })
 }
-
+app.get("/admin/listMedecin",(req,res)=>{
+  truffle_connect.getMedecins((balance) => {
+    console.log(balance)
+    res.render("admin/listemedecin",{result:balance});
+  });
+})
+app.get("/admin/GetMedecin/:email",(req,res)=>{
+  truffle_connect.GetMedecin(req.params.email,(medecin) => {
+    truffle_connect.GetAttribut(medecin[0],(result_attr) => {
+      medecin[2]=result_attr;
+      res.render("admin/ProfileMedecin",{medecin:medecin});
+    });
+  });
+})
 app.listen(port, () => {
   truffle_connect.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7546"));
   console.log("Express Listening at http://localhost:" + port);
