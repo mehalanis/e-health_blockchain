@@ -77,7 +77,7 @@
                 </div>
                 <!-- Card body -->
                 <div class="card-body">
-                  <form method="POST" action="/ADDFicheDeSuivi">
+                  <form method="POST" action="/admin/EditAttributMedecin">
                     <!-- Input groups with icon -->
                     <div class="row">
                         <div class="col-md-12">
@@ -95,12 +95,13 @@
                         <div class="col-md-12">
                         <div class="form-group">
                           <div class="input-group input-group-merge">
-                            
-                            <input class="magicsearch form-control" id="basic" placeholder="search names...">
+                            <input class="magicsearch form-control" id="basic"  placeholder="search names...">
                           </div>
                         </div>
                       </div>
-                    </div>                     
+                    </div>     
+                    <input type="hidden" name="attributs" id="attributs" >   
+                    <input type="hidden" name="medecin_id" value="<%= medecin[0]%>" >                
                     <!-- Input groups with icon -->
                     <button class="btn btn-primary" type="submit">Submit form</button>
                   </form>
@@ -131,13 +132,13 @@
    <!-- Demo JS - remove this in your project -->
    <script src="/assets/js/demo.min.js"></script>
 
-   <script src="/admin/javascript/index.js"></script>
+   <script src="/javascript/index.js"></script>
    <script src="/admin/javascript/jquery.magicsearch.min.js"></script>
 
  </body>
  <script>
    $(document).ready(function () {
-    var dataSource = [{id:"medecin"},{id:"medecin1"},{id:"medecin11"},{id:"medecin12"},{id:"medecin13"},{id:"medecin14"}]
+    var dataSource = [<% for(var i=0;i<attribut.length;i++){%>  {'id':"<%=attribut[i]%>"} , <%}%>]
      $('#basic').magicsearch({
         dataSource:dataSource,
         fields:["id"],
@@ -150,9 +151,15 @@
         multiStyle:{
           space:5,
           width:"100"
+        },
+        success:function($input,data){
+          $('#attributs').attr("value",$('#basic').attr("data-id"))
+        },
+        afterDelete:function($input,data){
+          $('#attributs').attr("value",$('#basic').attr("data-id"))
         }
      })
-     <% for(var i=1;i<medecin[2].length;i++) { %>
+     <% for(var i=0;i<medecin[2].length;i++) { %>
       $('#basic').trigger("set",{id:"<%= medecin[2][i] %>"});
       <%}%>
 

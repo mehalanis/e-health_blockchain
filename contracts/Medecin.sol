@@ -20,11 +20,17 @@ contract Medecin {
     }
     function addAttribut(uint _id,string memory _attribut) public returns(bool){
         attribut[_id].push(_attribut);
+        attribut[_id].push("");
         return true;
     }
     function GetAttribut(uint _id) public view returns(string[] memory){
         return attribut[_id];
     }
+    function InitAttribut(uint _id) public  returns(bool){
+        attribut[_id].length=0;
+        return true;
+    }
+
     function VerifieMedecin(string memory _email,string memory _password) public view returns(bool v,uint _id){
         if((keccak256(abi.encodePacked((list_email_medecin[_email].email))) == keccak256(abi.encodePacked((_email)))) &&
         (keccak256(abi.encodePacked((list_email_medecin[_email].password))) == keccak256(abi.encodePacked((_password))))) return (true,list_email_medecin[_email].id);

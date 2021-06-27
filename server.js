@@ -10,11 +10,11 @@ const IPFS = require("ipfs-api")
 const ipfs=new IPFS({host:"localhost",port:5001,protocol:"http"});
 const ipfs_address="http://localhost:8080/ipfs/"
 const https = require('http');
+const attribut=["medecin","radiologie"]
 // parse application/x-www-form-urlencoded
 ///
 app.set("views","./public_static")
 app.set("view engine","ejs")
-
 
 var session = require("express-session");
 app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true}))
@@ -148,8 +148,9 @@ app.get('/AddAttribut/:attr', (req, res) => {
     res.send(result)
   });
 });
+
 app.get('/GetAttribut', (req, res) => {
-  truffle_connect.GetAttribut(req.session.user_id,(result) => {
+  truffle_connect.GetAttribut(0,(result) => {
     var list=[];
     for(var i=0;i<result.length;i++){
       if(result[i]!="")
@@ -158,6 +159,13 @@ app.get('/GetAttribut', (req, res) => {
     res.send(list)
   });
 });
+app.get('/InitAttribut', (req, res) => {
+  truffle_connect.InitAttribut(req.session.user_id,(result) => {
+    console.log(result)
+    res.send(result)
+  });
+});
+
 app.get('/Dossier', (req, res) => {
   VerifieUser(req,res);
  // res.sendFile(__dirname+"/public_static/Dossier.html")
@@ -316,10 +324,27 @@ app.get("/admin/listMedecin",(req,res)=>{
 app.get("/admin/GetMedecin/:email",(req,res)=>{
   truffle_connect.GetMedecin(req.params.email,(medecin) => {
     truffle_connect.GetAttribut(medecin[0],(result_attr) => {
-      medecin[2]=result_attr;
-      res.render("admin/ProfileMedecin",{medecin:medecin});
+      var list=[];
+      for(var i=0;i<result_attr.length;i++){
+        if(result_attr[i]!="")
+        list.push(result_attr[i])
+      }
+      medecin[2]=list;
+      res.render("admin/ProfileMedecin",{medecin:medecin,attribut:attribut});
     });
   });
+})
+app.post("/admin/EditAttributMedecin",(req,res)=>{
+  var list=req.body.attributs.split(",")
+  var k=0;
+  truffle_connect.InitAttribut(req.body.medecin_id,(result_init)=>{
+    for(var i=0;i<list.length;i++){
+      truffle_connect.addAttribut(req.body.medecin_id,list[i],(result) => {
+        k++;
+        if(k==list.length)   res.redirect("/admin/listMedecin")
+      });
+    }
+  })
 })
 app.listen(port, () => {
   truffle_connect.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7546"));

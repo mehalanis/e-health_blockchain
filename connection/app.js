@@ -9,7 +9,7 @@ var Medecin = contract(Medecin_artifact);
 const admin_artifact = require('../build/contracts/admin.json');
 var admin = contract(admin_artifact);
 
-var addresse="0x09860e89c81C1B69F67bd9ff169Ac6E09c359F15"
+var addresse="0xbdFe25b7D538d8fE885281B438163527029BAd76"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -55,6 +55,22 @@ module.exports = {
     Medecin.deployed().then(function(instance) {
       meta = instance;
       return meta.addAttribut(id,attr,{from:addresse,gas:1090996000});
+    }).then(function(val) {
+      console.log(val)
+      callback(val);
+    }).catch(function(e) {
+      callback(e);
+    });
+  },
+  InitAttribut:function(id, callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    Medecin.setProvider(self.web3.currentProvider);
+    var meta;
+    Medecin.deployed().then(function(instance) {
+      meta = instance;
+      return meta.InitAttribut(id,{from:addresse,gas:1090996000});
     }).then(function(val) {
       console.log(val)
       callback(val);
