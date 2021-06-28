@@ -150,7 +150,7 @@ app.get('/AddAttribut/:attr', (req, res) => {
 });
 
 app.get('/GetAttribut', (req, res) => {
-  truffle_connect.GetAttribut(0,(result) => {
+  truffle_connect.GetAllAttribut(0,(result) => {
     var list=[];
     for(var i=0;i<result.length;i++){
       if(result[i]!="")
@@ -201,7 +201,7 @@ app.post('/CreateDossier', (req, res) => {
             res.json('err');
             console.log(err);
           }
-          truffle_connect.setUserDossier(req.session.user_id,files[0]["hash"],req.body.politique,(balance) => {
+          truffle_connect.CreerDossier(req.session.user_id,files[0]["hash"],req.body.politique,(balance) => {
             console.log(files);
             res.redirect("/Dossier")
             return;
@@ -218,7 +218,7 @@ app.post('/CreateDossier', (req, res) => {
 
 
 app.get('/GetDossier/:dossier_id', (req, res) => {
-  truffle_connect.GetUserDossier(req.session.user_id,req.params.dossier_id,(result) => {
+  truffle_connect.GetPatientDossier(req.session.user_id,req.params.dossier_id,(result) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
@@ -249,7 +249,7 @@ app.get('/ADDFicheDeSuivi/:dossier_id', (req, res) => {
 });
 
 app.post('/ADDFicheDeSuivi', (req, res) => {
-  truffle_connect.GetUserDossier(req.body.user_id,req.body.dossier_id,(result) => {
+  truffle_connect.GetPatientDossier(req.body.user_id,req.body.dossier_id,(result) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
@@ -305,7 +305,7 @@ function ADDInfoDossier(data,user_id,dossier_id,politique,res,redirect){
             res.json('err');
             console.log(err);
           }
-          truffle_connect.setHashFile(user_id,dossier_id,files[0]["hash"],(balance) => {
+          truffle_connect.setHashNewDossier(user_id,dossier_id,files[0]["hash"],(balance) => {
             console.log(files);
             res.redirect(redirect)
           });
@@ -323,7 +323,7 @@ app.get("/admin/listMedecin",(req,res)=>{
 })
 app.get("/admin/GetMedecin/:email",(req,res)=>{
   truffle_connect.GetMedecin(req.params.email,(medecin) => {
-    truffle_connect.GetAttribut(medecin[0],(result_attr) => {
+    truffle_connect.GetAllAttribut(medecin[0],(result_attr) => {
       var list=[];
       for(var i=0;i<result_attr.length;i++){
         if(result_attr[i]!="")

@@ -9,7 +9,7 @@ var Medecin = contract(Medecin_artifact);
 const admin_artifact = require('../build/contracts/admin.json');
 var admin = contract(admin_artifact);
 
-var addresse="0xbdFe25b7D538d8fE885281B438163527029BAd76"
+var addresse="0x7346a6d8866D10632822C6f81894D019f8b149c8"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -78,7 +78,7 @@ module.exports = {
       callback(e);
     });
   },
-  GetAttribut:function(id, callback) {
+  GetAllAttribut:function(id, callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
@@ -86,7 +86,7 @@ module.exports = {
     var meta;
     Medecin.deployed().then(function(instance) {
       meta = instance;
-      return meta.GetAttribut(id,{from:addresse,gas:1090996000});
+      return meta.GetAllAttribut(id,{from:addresse,gas:1090996000});
     }).then(function(val) {
       console.log(val)
       callback(val);
@@ -158,7 +158,7 @@ module.exports = {
       callback(e);
     });
   },
-  setUserDossier:function(id, hash_file, policy, callback) {
+  CreerDossier:function(id, hash_file, policy, callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
@@ -167,7 +167,7 @@ module.exports = {
     DossierMedicale.deployed().then(function(instance) {
       meta = instance;
       console.log(id)
-      return meta.setUserDossier(id,hash_file,policy,{from:addresse,gas:10996000});
+      return meta.CreerDossier(id,hash_file,policy,{from:addresse,gas:10996000});
     }).then(function(val) {
       console.log(val+" then setUserDossier")
       callback(val);
@@ -175,7 +175,7 @@ module.exports = {
       callback(e);
     });
   },
-  GetUserDossier:function(patient_id,dossier_id,  callback) {
+  GetPatientDossier:function(patient_id,dossier_id,  callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
@@ -183,14 +183,14 @@ module.exports = {
     var meta;
     DossierMedicale.deployed().then(function(instance) {
       meta = instance;
-      return meta.GetUserDossier(patient_id,dossier_id,{from:addresse,gas:10996000});
+      return meta.GetPatientDossier(patient_id,dossier_id,{from:addresse,gas:10996000});
     }).then(function(val) {
       callback(val);
     }).catch(function(e) {
       callback(e);
     });
   },
-  setHashFile:function(patient_id,dossier_id , hash,  callback) {
+  setHashNewDossier:function(patient_id,dossier_id , hash,  callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
@@ -198,7 +198,7 @@ module.exports = {
     var meta;
     DossierMedicale.deployed().then(function(instance) {
       meta = instance;
-      return meta.setHashFile(patient_id,dossier_id,hash,{from:addresse,gas:10996000});
+      return meta.setHashNewDossier(patient_id,dossier_id,hash,{from:addresse,gas:10996000});
     }).then(function(val) {
       callback(val);
     }).catch(function(e) {
