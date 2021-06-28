@@ -74,11 +74,11 @@
                       <th>Name</th>
                       <th>Position</th>
                     </tr>
-                    <% for(var i=1;i<result[0].length;i++) { %>
+                    <% for(var i=1;i<resultDossierId.length;i++) { %>
                       <tr>
-                        <td> <%= result[0][i] %></td>
+                        <td> <%= resultDossier[i] %></td>
                         <td>
-                          <a class="btn btn-primary" href='GetDossier/<%= result[1][i-1] %>'> detail </a>  
+                          <a class="btn btn-primary" href='GetDossier/<%= patient_id %>/<%= resultDossierId[i] %>'> detail </a>  
                         </td>
                       </tr>
                       <% } %>

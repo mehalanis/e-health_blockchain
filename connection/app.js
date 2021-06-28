@@ -9,7 +9,7 @@ var Medecin = contract(Medecin_artifact);
 const admin_artifact = require('../build/contracts/admin.json');
 var admin = contract(admin_artifact);
 
-var addresse="0x7346a6d8866D10632822C6f81894D019f8b149c8"
+var addresse="0x0c7456629f1a5F2ebFF9f6b6DB0f88482b1BDcea"
 
 module.exports = {
   sendUser: function(/*nom,prenom,adresse,telephone,*/email,password,callback) {
@@ -158,7 +158,7 @@ module.exports = {
       callback(e);
     });
   },
-  CreerDossier:function(id, hash_file, policy, callback) {
+  CreerDossier:function(id, NomDossier, hash_file, policy, callback) {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
@@ -167,7 +167,7 @@ module.exports = {
     DossierMedicale.deployed().then(function(instance) {
       meta = instance;
       console.log(id)
-      return meta.CreerDossier(id,hash_file,policy,{from:addresse,gas:10996000});
+      return meta.CreerDossier(id,NomDossier,hash_file,policy,{from:addresse,gas:10996000});
     }).then(function(val) {
       console.log(val+" then setUserDossier")
       callback(val);
@@ -214,6 +214,21 @@ module.exports = {
     DossierMedicale.deployed().then(function(instance) {
       meta = instance;
       return meta.GetAllDossier(patient_id,{from:addresse,gas:10996000});
+    }).then(function(val) {
+      callback(val);
+    }).catch(function(e) {
+      callback(e);
+    });
+  },
+  GetAllDossierId:function(patient_id,  callback) {
+    var self = this;
+
+    // Bootstrap the MetaCoin abstraction for Use.
+    DossierMedicale.setProvider(self.web3.currentProvider);
+    var meta;
+    DossierMedicale.deployed().then(function(instance) {
+      meta = instance;
+      return meta.GetAllDossierId(patient_id,{from:addresse,gas:10996000});
     }).then(function(val) {
       callback(val);
     }).catch(function(e) {

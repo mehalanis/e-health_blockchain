@@ -78,6 +78,7 @@ app.post('/loginPatient', (req, res) => {
       req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
+      req.session.type="patient";
       /*  generer la SK */
     }
     res.send(balance)
@@ -93,6 +94,7 @@ app.post('/loginMedecin', (req, res) => {
       req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
+      req.session.type="medecin";
       /*  generer la SK */
     }
     res.send(balance)
@@ -107,6 +109,7 @@ app.post('/loginAdmin', (req, res) => {
 //      req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
+
       /*  generer la SK */
     }
     res.send(balance)
@@ -121,12 +124,9 @@ app.get('/Profile', (req, res) => {
   });
 });
 app.get('/RecherchePatient', (req, res) => {
-  VerifieUser(req,res);
+  //VerifieUser(req,res);
    // res.sendFile(__dirname+"/public_static/Profile.html")
-   truffle_connect.GetUser(req.session.user_id,(balance) => {
-     console.log(balance)
-     res.render("RecherchPatient",{"recherchepatient":balance})
-   });
+     res.render("RecherchPatient")
  });
 
 app.post('/GetPatient', (req, res) => {
@@ -135,9 +135,12 @@ app.post('/GetPatient', (req, res) => {
    truffle_connect.GetUserByEmail(req.body.email,(balance) => {
      console.log(balance)
      truffle_connect.GetAllDossier(balance[0],(listDossier) => {
-       balance[2]=listDossier
-     // res.render("Dossier",{"result":result})
+      truffle_connect.GetAllDossierId(balance[0],(listDossierId) => {
+        balance[2]=listDossier
+        balance[3]=listDossierId
+        // res.render("Dossier",{"result":result})
       res.send(balance)
+        });
       });
    });
  });
@@ -169,8 +172,11 @@ app.get('/InitAttribut', (req, res) => {
 app.get('/Dossier', (req, res) => {
   VerifieUser(req,res);
  // res.sendFile(__dirname+"/public_static/Dossier.html")
-  truffle_connect.GetAllDossier(req.session.user_id,(result) => {
-    res.render("Dossier",{"result":result})
+  truffle_connect.GetAllDossier(req.session.user_id,(resultDossier) => {
+    truffle_connect.GetAllDossierId(req.session.user_id,(resultDossierId) => {
+      res.render("Dossier",{"resultDossier":resultDossier,
+      "resultDossierId":resultDossierId,"patient_id":req.session.user_id})
+    });
   });
  });
 
@@ -201,7 +207,7 @@ app.post('/CreateDossier', (req, res) => {
             res.json('err');
             console.log(err);
           }
-          truffle_connect.CreerDossier(req.session.user_id,files[0]["hash"],req.body.politique,(balance) => {
+          truffle_connect.CreerDossier(req.session.user_id,req.body.NomDossier,files[0]["hash"],req.body.politique,(balance) => {
             console.log(files);
             res.redirect("/Dossier")
             return;
@@ -217,12 +223,12 @@ app.post('/CreateDossier', (req, res) => {
 
 
 
-app.get('/GetDossier/:dossier_id', (req, res) => {
-  truffle_connect.GetPatientDossier(req.session.user_id,req.params.dossier_id,(result) => {
+app.get('/GetDossier/:patient_id/:dossier_id', (req, res) => {
+  truffle_connect.GetPatientDossier(req.params.patient_id,req.params.dossier_id,(result) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
-    https.get(ipfs_address+result[1], function(response) {
+    https.get(ipfs_address+result[2], function(response) {
       response.pipe(file);  
       exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
         if (error) {
@@ -253,7 +259,7 @@ app.post('/ADDFicheDeSuivi', (req, res) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
-    https.get(ipfs_address+result[1], function(response) {
+    https.get(ipfs_address+result[2], function(response) {
       response.pipe(file);  
       exec("cpabe-dec pub_key a_private_key  dossier.txt.cpabe", (error, stdout, stderr) => {
           if (error) {

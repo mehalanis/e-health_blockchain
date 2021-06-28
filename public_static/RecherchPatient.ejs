@@ -172,12 +172,11 @@
                 $(".alert-success").css("display","");
                // $("#rowdossier").show()
                    // $("#rowrecherche").hide()
-                for (let i = 0; i < data[2].length; i++) {
-                    $("#table-dossier").append("<tr><td>"+data[2][i][1]+"</td><td><a class='btn btn-primary' href='GetDossier/"+data[2][i+1][0]+"'> detail </a>  </td></tr>")
-                
-                    
+                for (let i = 1; i < data[2].length; i++) {
+                    $("#table-dossier").append("<tr><td>"+data[2][i]
+                      +"</td><td><a class='btn btn-primary' href='GetDossier/"+data[3][i]
+                        +"'> detail </a> </td></tr>")
                 }
-            
               }else{
                 $(".alert-danger").css("display","");
               }

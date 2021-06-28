@@ -27,13 +27,22 @@ contract DossierMedicale {
                 ,list_dossier_user[_patient_id][_dossier_id].hash_file
                 ,list_dossier_user[_patient_id][_dossier_id].policy);     
     }
-    function GetAllDossier(uint _patinet_id) public view returns(string[] memory,uint[] memory){
-      string[] memory hash_=new string[](list_dossier_user[_patinet_id].length+1);
+    function GetAllDossier(uint _patinet_id) public view returns(string[] memory){
+      string[] memory Nom_=new string[](list_dossier_user[_patinet_id].length+1);
+       //uint[] memory id_=new uint[](list_dossier_user[_patinet_id].length+1);
+      for(uint  i=0;i<list_dossier_user[_patinet_id].length;i++){
+        Nom_[i]=list_dossier_user[_patinet_id][i].NomDossier;
+      //  id_[i]=list_dossier_user[_patinet_id][i].id;
+      }
+      return (Nom_);
+    }
+      function GetAllDossierId(uint _patinet_id) public view returns(uint[] memory){
+      //string[] memory Nom_=new string[](list_dossier_user[_patinet_id].length+1);
        uint[] memory id_=new uint[](list_dossier_user[_patinet_id].length+1);
       for(uint  i=0;i<list_dossier_user[_patinet_id].length;i++){
+        //Nom_[i]=list_dossier_user[_patinet_id][i].NomDossier;
         id_[i]=list_dossier_user[_patinet_id][i].id;
-        hash_[i]=list_dossier_user[_patinet_id][i].hash_file;
       }
-      return (hash_,id_);
+      return (id_);
     }
 }
