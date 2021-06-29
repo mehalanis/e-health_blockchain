@@ -117,15 +117,12 @@ app.post('/loginAdmin', (req, res) => {
 });
 app.get('/Profile', (req, res) => {
  VerifieUser(req,res);
-  // res.sendFile(__dirname+"/public_static/Profile.html")
   truffle_connect.GetUser(req.session.user_id,(balance) => {
     console.log(balance)
     res.render("Profile",{"profile":balance})
   });
 });
 app.get('/RecherchePatient', (req, res) => {
-  //VerifieUser(req,res);
-   // res.sendFile(__dirname+"/public_static/Profile.html")
      res.render("RecherchPatient")
  });
 
@@ -223,8 +220,9 @@ app.post('/CreateDossier', (req, res) => {
 
 
 
-app.get('/GetDossier/:patient_id/:dossier_id', (req, res) => {
-  truffle_connect.GetPatientDossier(req.params.patient_id,req.params.dossier_id,(result) => {
+app.get('/GetDossier/:id', (req, res) => {
+  var x=req.params.id.split("_")
+  truffle_connect.GetPatientDossier(x[0],x[1],(result) => {
     //console.log(balance[1])
     console.log(result)
     const file = fs.createWriteStream("dossier.txt.cpabe");
