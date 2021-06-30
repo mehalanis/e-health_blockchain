@@ -242,13 +242,15 @@ app.get('/GetDossier/:id', (req, res) => {
         }
         let rawdata = fs.readFileSync('dossier.txt');
         var dossier = JSON.parse(rawdata);
-          res.render("FicheDeSuivi",{"dossier":dossier,"dossier_id":req.params.dossier_id})
+          res.render("FicheDeSuivi",{"dossier":dossier,"dossier_id":x[1],"patinet_id":x[0]})
         });   
     });
   });
 });
-app.get('/ADDFicheDeSuivi/:dossier_id', (req, res) => {
-  res.render("AddFicheDeSuivi",{"user_id":req.session.user_id,"dossier_id":req.params.dossier_id})
+app.get('/ADDFicheDeSuivi/:id', (req, res) => {
+  var x=req.params.id.split("_")
+  console.log(x)
+  res.render("AddFicheDeSuivi",{"patient_id":x[0],"dossier_id":x[1]})
 
 });
 
@@ -276,7 +278,7 @@ app.post('/ADDFicheDeSuivi', (req, res) => {
           +req.body.CompteRendu+'"}';
           FicheDeSuivi=JSON.parse(FicheDeSuivi)
           a.push(FicheDeSuivi);
-          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.dossier_id)
+          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.user_id+"_"+req.body.dossier_id)
           
         });   
     });

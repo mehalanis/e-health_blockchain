@@ -1,5 +1,6 @@
 $(document).ready(function () {
-  $("#sidenav-main").load("../include/sidenav.html");
+	$("#sidenav-main").load("../include/sidenav.html");
+	$("#sidenav-main_medecin").load("../include/sidenav_medecin.html");
   $("#navbar").load("../include/navbar.html");
   $("#footer").load("../include/footer.html");
 })

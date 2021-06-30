@@ -13,7 +13,8 @@ $(document).ready(function () {
               $(".alert-info").css("display","none");
               if(data[0]==true){
                 $(".alert-success").css("display","");
-                window.location.replace("/");
+                if($("#type_user").val()=="1") window.location.replace("/");
+                else window.location.replace("/RecherchePatient")
               }else{
                 $(".alert-danger").css("display","");
               }

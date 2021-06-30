@@ -1,1 +1,1 @@
-[]
+[{"Type":"malade 1","DataCreation":"2021-06-24","Observation":"obs","CompteRendu":"compte"},{"Type":"anis","DataCreation":"2021-06-15","Observation":"a","CompteRendu":"a"},{"Type":"anis","DataCreation":"2021-06-04","Observation":"a","CompteRendu":"a"}]
