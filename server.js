@@ -10,7 +10,7 @@ const IPFS = require("ipfs-api")
 const ipfs=new IPFS({host:"localhost",port:5001,protocol:"http"});
 const ipfs_address="http://localhost:8080/ipfs/"
 const https = require('http');
-const attribut=["medecin","radiologie"]
+const attribut=["neurologie",'cardiologie',"radiologie","gynécologie","chirurgien","dermatologie","ophtalmologie"]
 // parse application/x-www-form-urlencoded
 ///
 app.set("views","./public_static")
@@ -109,7 +109,7 @@ app.post('/loginAdmin', (req, res) => {
 //      req.session.user_id=balance[1].c[0]+"";
       req.session.email=req.body.email;
       req.session.password=req.body.password;
-
+      req.session.type="admin";
       /*  generer la SK */
     }
     res.send(balance)
@@ -143,7 +143,7 @@ app.post('/GetPatient', (req, res) => {
  });
 
 app.get('/AddAttribut/:attr', (req, res) => {
-  truffle_connect.addAttribut(req.session.user_id,req.params.attr,(result) => {
+  truffle_connect.addAttribut(0,req.params.attr,(result) => {
     console.log(result)
     res.send(result)
   });
@@ -242,7 +242,7 @@ app.get('/GetDossier/:id', (req, res) => {
         }
         let rawdata = fs.readFileSync('dossier.txt');
         var dossier = JSON.parse(rawdata);
-          res.render("FicheDeSuivi",{"dossier":dossier,"dossier_id":x[1],"patinet_id":x[0]})
+          res.render("FicheDeSuivi",{"dossier":dossier,"dossier_id":x[1],"patinet_id":x[0],"user_type":req.session.type})
         });   
     });
   });
@@ -250,6 +250,7 @@ app.get('/GetDossier/:id', (req, res) => {
 app.get('/ADDFicheDeSuivi/:id', (req, res) => {
   var x=req.params.id.split("_")
   console.log(x)
+  if(req.session.type!="medecin"){ res.send("error");}
   res.render("AddFicheDeSuivi",{"patient_id":x[0],"dossier_id":x[1]})
 
 });
@@ -336,6 +337,7 @@ app.get("/admin/GetMedecin/:email",(req,res)=>{
         list.push(result_attr[i])
       }
       medecin[2]=list;
+      console.log(list)
       res.render("admin/ProfileMedecin",{medecin:medecin,attribut:attribut});
     });
   });
@@ -346,6 +348,7 @@ app.post("/admin/EditAttributMedecin",(req,res)=>{
   truffle_connect.InitAttribut(req.body.medecin_id,(result_init)=>{
     for(var i=0;i<list.length;i++){
       truffle_connect.addAttribut(req.body.medecin_id,list[i],(result) => {
+        console.log(list[0])
         k++;
         if(k==list.length)   res.redirect("/admin/listMedecin")
       });

@@ -26,6 +26,7 @@ contract Medecin {
 
     function addAttribut(uint _id,string memory _attribut) public returns(bool){
         attributs_medecin[_id].push(_attribut);
+        attributs_medecin[_id].push("");
         return true;
     }
     function GetAllAttribut(uint _id) public view returns(string[] memory){

@@ -34,7 +34,7 @@
  
  <body>
    <!-- Sidenav -->
-   <nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+   <nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="<%if(user_type=='patient'){ %>sidenav-main<% }else{  %>sidenav-main_medecin<% }%>">
      
    </nav>
    <!-- Main content -->
@@ -59,11 +59,12 @@
                  </ol>
                </nav>
              </div>
+             <%if(user_type!='patient'){ %>
              <div class="col-lg-6 col-5 text-right">
               <a href="/ADDFicheDeSuivi/<%=patinet_id%>_<%= dossier_id %>" class="btn btn-sm btn-neutral">New</a>
               <a href="#" class="btn btn-sm btn-neutral">Filters</a>
             </div>
-            
+            <%}%>
            </div>
           </div>
         </div>
