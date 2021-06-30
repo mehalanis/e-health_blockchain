@@ -80,6 +80,20 @@ app.post('/loginPatient', (req, res) => {
       req.session.password=req.body.password;
       req.session.type="patient";
       /*  generer la SK */
+      exec("cpabe-keygen -o a_private_key pub_key master_key patient", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+            res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            
+            res.send("error"); 
+            return;
+        }
+
+        }); 
     }
     res.send(balance)
   });
@@ -96,6 +110,27 @@ app.post('/loginMedecin', (req, res) => {
       req.session.password=req.body.password;
       req.session.type="medecin";
       /*  generer la SK */
+      truffle_connect.GetAllAttribut(balance[1].c[0]+"",(result) => {
+        var list_attr="";
+        for(var i=0;i<result.length;i++){
+          if(result[i]!="")
+          list_attr+= result[i]+" ";
+        }
+        exec("cpabe-keygen -o a_private_key pub_key master_key "+list_attr, (error, stdout, stderr) => {
+          if (error) {
+              console.log(`error: vous n'avez pas l'autorisation d'accéder a ce dossier ${error.message}`);
+              res.send("vous n'avez pas l'autorisation d'accéder a ce dossier" )
+              return;
+          }
+          if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              
+              res.send("error"); 
+              return;
+          }
+          console.log("ok cle medecin")
+          });
+      });
     }
     res.send(balance)
   });
@@ -176,7 +211,9 @@ app.get('/Dossier', (req, res) => {
     });
   });
  });
-
+app.get("/CreateDossier",(req,res)=>{
+  res.render("CreateDossier",{"attribut":attribut});
+})
 app.post('/CreateDossier', (req, res) => {
   
   fs.writeFile('dossier.txt', '[]', err => {
@@ -184,6 +221,7 @@ app.post('/CreateDossier', (req, res) => {
       console.error(err)
       return
     }
+    console.log(req.body.politique);
     exec("cpabe-enc pub_key dossier.txt '"+req.body.politique+"'", (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
@@ -204,6 +242,7 @@ app.post('/CreateDossier', (req, res) => {
             res.json('err');
             console.log(err);
           }
+          
           truffle_connect.CreerDossier(req.session.user_id,req.body.NomDossier,files[0]["hash"],req.body.politique,(balance) => {
             console.log(files);
             res.redirect("/Dossier")
@@ -279,7 +318,7 @@ app.post('/ADDFicheDeSuivi', (req, res) => {
           +req.body.CompteRendu+'"}';
           FicheDeSuivi=JSON.parse(FicheDeSuivi)
           a.push(FicheDeSuivi);
-          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,"patient",res,"/GetDossier/"+req.body.user_id+"_"+req.body.dossier_id)
+          ADDInfoDossier(JSON.stringify(a),req.body.user_id,req.body.dossier_id,result[3],res,"/GetDossier/"+req.body.user_id+"_"+req.body.dossier_id)
           
         });   
     });

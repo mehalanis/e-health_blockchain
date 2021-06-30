@@ -110,9 +110,9 @@
                           <div class="input-group input-group-merge">
                             <select class="form-control" name="" id="attribut">
                               <option value="patient">patient</option>
-                              <option value="medecin">medecin</option>
-                              <option value="test1">test1</option>
-                              <option value="test2">test2</option>                      
+                              <% for(var i=0;i<attribut.length;i++){%> 
+                                <option value="<%=attribut[i]%>"><%=attribut[i]%></option>
+                              <%}%>
                             </select>
                           </div>
                         </div>
